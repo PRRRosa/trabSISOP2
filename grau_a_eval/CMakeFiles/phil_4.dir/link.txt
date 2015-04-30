@@ -1,1 +1,0 @@
-/usr/bin/cc      CMakeFiles/phil_4.dir/phil_4.c.o  -o phil_4 -rdynamic ../libthread/libthread.so -Wl,-rpath,/home/osboxes/Desktop/trabGrauA-SisopII/graua-skel/libthread 

@@ -1,1 +1,0 @@
-/usr/bin/cc      CMakeFiles/sanity_recursion.dir/sanity_recursion.c.o  -o sanity_recursion -rdynamic ../libthread/libthread.so -Wl,-rpath,/home/osboxes/Desktop/trabGrauA-SisopII/graua-skel/libthread 

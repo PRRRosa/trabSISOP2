@@ -1,1 +1,0 @@
-/usr/bin/cc      CMakeFiles/prod_cons.dir/prod_cons.c.o  -o prod_cons -rdynamic ../libthread/libthread.so -Wl,-rpath,/home/osboxes/Desktop/trabGrauA-SisopII/graua-skel/libthread 
