@@ -60,7 +60,7 @@ void prod(void *p) {
         sema_wait(&buf_mtx);
         while ((buf_count == buf_size) && (n_prod < produced_limit))
             cond_wait(&empty, &buf_mtx);
-        assert(buf_mtx.value <= 0);
+        //assert(buf_mtx.value <= 0);
         if (n_prod < produced_limit) {
             product = rand();
             buffer[(n_prod++) % buf_size] = product;

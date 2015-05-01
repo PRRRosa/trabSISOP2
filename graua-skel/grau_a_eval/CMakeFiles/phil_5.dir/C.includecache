@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/osboxes/Desktop/trabGrauA-SisopII/graua-skel/grau_a_eval/cond.h
+libthread/thread.h
+-
+list.h
+/home/osboxes/Desktop/trabGrauA-SisopII/graua-skel/grau_a_eval/list.h
+
+/home/osboxes/Desktop/trabGrauA-SisopII/graua-skel/grau_a_eval/phil_5.c
+unistd.h
+-
+stdlib.h
+-
+stdio.h
+-
+sys/time.h
+-
+assert.h
+-
+libthread/thread.h
+-
+cond.h
+/home/osboxes/Desktop/trabGrauA-SisopII/graua-skel/grau_a_eval/cond.h
+
+include/list.h
+stddef.h
+-
+
+libthread/thread.h
+

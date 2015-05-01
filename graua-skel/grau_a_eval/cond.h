@@ -50,7 +50,7 @@ void cond_wait(cond_t * cond, sema_t * mtx) {
     thread_block(); // must remove from ready list
 
     sema_wait(mtx); // re-acquire mutex
-    assert(mtx->value <= 0);
+    //assert(mtx->value <= 0);
 }
 
 void cond_signal(cond_t * cond) {
@@ -59,7 +59,7 @@ void cond_signal(cond_t * cond) {
     if (!list_empty(&cond->cond_waiting)) {
         first = list_first_entry_or_null(&cond->cond_waiting, struct thread_cond_item, list);
         if (!first) {
-            fprintf(stderr, "SOMETHING'S ROTTEN IN THE KINGDON OF DENMARK!\n");
+            fprintf(stderr, "SOMETHING'S ROTTEN IN THE KINGDOM OF DENMARK!\n");
             exit(1);
         }
 

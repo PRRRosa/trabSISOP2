@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/osboxes/Desktop/trabGrauA-SisopII/graua-skel/grau_a_eval/phil_3.c
+unistd.h
+-
+stdlib.h
+-
+stdio.h
+-
+sys/time.h
+-
+assert.h
+-
+libthread/thread.h
+-
+
+libthread/thread.h
+

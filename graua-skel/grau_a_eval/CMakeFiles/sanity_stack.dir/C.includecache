@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/osboxes/Desktop/trabGrauA-SisopII/graua-skel/grau_a_eval/sanity_stack.c
+stdlib.h
+-
+stdio.h
+-
+assert.h
+-
+libthread/thread.h
+-
+
+libthread/thread.h
+

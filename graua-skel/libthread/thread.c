@@ -34,7 +34,7 @@ typedef enum {UNITIALIZED = 0, FINISHED, READY, BLOCKED, RUNNING} thread_state_t
 
 int n_threads = 0; // pode ser útil saber quantas threads estão em execução agora
 
-//thread_t current_thread;
+thread_t *current_thread;
 
 
 
@@ -113,9 +113,9 @@ void thread_yield() {
     threading_sched(none);
 }
 
-void thread_exit(void * retval) {
+void thread_exit(void *ignored) {
     //fprintf(stderr, "NOT IMPLEMENTED\n");
-    current_thread->retval = retval;
+    current_thread->retval = ignored;
     ListItem* n = current_thread->waitingForJoin;
     while (n != NULL) {
     	ListItem* _n = n->next;
@@ -155,6 +155,9 @@ int threading_init() {
     //INICIALIZAR THREAD(CONTEXTO, LISTA, ID, ESTADO)
 }
 
+void threading_exit(){
+
+}
 
 void thread_block() {
     //fprintf(stderr, "NOT IMPLEMENTED\n");
