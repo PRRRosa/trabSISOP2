@@ -35,7 +35,7 @@ typedef enum {UNITIALIZED = 0, FINISHED, READY, BLOCKED, RUNNING} thread_state_t
 int n_threads = 0; // pode ser útil saber quantas threads estão em execução agora
 
 thread_t *current_thread;
-
+LIST_HEAD(listHead);
 
 
 typedef struct thread{
@@ -44,13 +44,15 @@ typedef struct thread{
     //int alguma_coisa_para_nao_dar_erro;
     //CRIAR CONTEXTO
     //getcontext(ucontext_t *ucp);
-    thread_t *t;
+    //thread_t *t;
     ucontext_t ucp;
     //CRIAR ID
     int id;
     //CRIAR ESTADO
     thread_state_t state; 
     //CABECALHO LISTA
+    struct list_head list_member;
+
     struct listItem* to_list;
     struct listItem *waitingForJoin;
     void *retval;
@@ -74,7 +76,7 @@ readyList_t readyList;
 blockedList_t blockedList;
 
 void threading_sched(void * none) {
-    do { 
+    
         printf("You've reached the sched from threads %d, please leave a message\n", thread_get_id());
         // DO SOMETHING
         // Escolhe uma thread, passa o controle para ela
@@ -83,14 +85,22 @@ void threading_sched(void * none) {
         thread_t * tnext = NULL,
                  * tmp;
         if ((current_thread->to_list != NULL) && (current_thread->state == READY)){
+        	ListItem *lnext = current_thread->to_list->next;
         	tnext = current_thread->to_list->next->t;
-        	if (!tnext)
-        		if (readyList.head)
+        	if(lnext){
+        		//has next item in list
+        		tnext = current_thread->to_list->next->t;
+        	}else{
+        		//end of list, go backto head
+        		if(readyList.head)
         			tnext = readyList.head->t;
-        } else {
-        	if (readyList.head)
-        		tnext = readyList.head->t;
-        }
+        	}
+		}
+		else {
+			//current not ready or not in any list, go back to first thread
+			if(readyList.head)
+				tnext = readyList.head->t;
+		}
 
         if (!tnext) {
         	printf("Empty sched\n");
@@ -100,9 +110,10 @@ void threading_sched(void * none) {
         // CHAMA PROXIMA THREAD(SWAP)
         tmp = current_thread;
         current_thread = tnext;
+        printf("Going from %d to %d\n", tmp->id, current_thread->id);
         swapcontext(&tmp->ucp, &current_thread->ucp);
 
-    } while (1);
+    
 
     // O que fazer quando o escalonador chega aqui?
 }
@@ -111,6 +122,22 @@ void thread_yield() {
     //fprintf(stderr, "NOT IMPLEMENTED\n");
     void *none;
     threading_sched(none);
+}
+
+int List_del(ListItem **head, ListItem *i){
+	if(*head == i){
+		*head = i->next;
+		return 0;
+	}else{
+		ListItem *prev = *head;
+		while(prev && prev->next != i)
+			prev = prev->next;
+		if(prev){
+			prev->next = i->next;
+			return 0;
+		}
+	}
+	return 1;
 }
 
 void thread_exit(void *ignored) {
@@ -124,6 +151,9 @@ void thread_exit(void *ignored) {
     }
 
     // remover de ready
+    if(List_del(&readyList.head, current_thread->to_list)){
+    	printf("ERROR\n");
+    }
 
     current_thread->state = FINISHED;
     //CHAMAR PROXIMA THREAD(YIELD)
@@ -136,12 +166,16 @@ int threading_init() {
     readyList.head = NULL;
     blockedList.head = NULL;
 
+
     thread_t * main_thread = malloc(sizeof(struct thread));
     getcontext(&main_thread->ucp);
     main_thread->state = READY;
     main_thread->waitingForJoin = NULL;
     main_thread->id = n_threads;
     n_threads++;
+
+    INIT_LIST_HEAD(&main_thread->list_member);
+
 
     struct listItem *l = malloc(sizeof( struct listItem));
     l->t = main_thread;
@@ -150,6 +184,8 @@ int threading_init() {
 
     readyList.head = l;
     blockedList.head = NULL;
+
+    current_thread = main_thread;
 
     return 0;
     //INICIALIZAR THREAD(CONTEXTO, LISTA, ID, ESTADO)
@@ -186,23 +222,23 @@ void thread_block() {
 void thread_wakeup(thread_t * t) {
     //fprintf(stderr, "NOT IMPLEMENTED\n");
     //CURRENT PASSA THREAD PARA LISTA READY
-	current_thread->state = READY;
+	t->state = READY;
 
-    if(current_thread->to_list == blockedList.head){
-    	blockedList.head = current_thread->to_list->next;
+    if(t->to_list == blockedList.head){
+    	blockedList.head = t->to_list->next;
     }else{
     	ListItem *prev = blockedList.head;
-    	while(prev && prev->next != current_thread->to_list){
+    	while(prev && prev->next != t->to_list){
     		prev = prev->next;
     	}
     	if (prev){
-    		prev->next = current_thread->to_list->next;
+    		prev->next = t->to_list->next;
     	}
     }
 
 
-    current_thread->to_list->next = readyList.head;
-    readyList.head = current_thread->to_list;
+    t->to_list->next = readyList.head;
+    readyList.head = t->to_list;
 
     //thread_yield();
     //CURRENT THREAD SET THREAD PARA READY//
@@ -211,16 +247,20 @@ void thread_wakeup(thread_t * t) {
 
 void * thread_join(thread_t *t) {
     //fprintf(stderr, "NOT IMPLEMENTED\n");
-    if (current_thread->state == FINISHED) {
+    if (t->state == FINISHED) {
     	return t->retval;
     } else {
-    	// add to joinWaitList
+    	// add to WaitingForJoin
+    	printf("ELSE BEFORE LIST ADD\n");
+    	//t->waitingForJoin->next->t = current_thread; 
     	// block
-    	// return t->retval
+    	printf("ELSE AFTER LIST ADD\n");
+    	current_thread->state = BLOCKED;
+    	thread_block();
+    	return t->retval;
     }
     return NULL;
     //RETURN EXIT PARAMETER
-
 
 }
 
